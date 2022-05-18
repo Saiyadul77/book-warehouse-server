@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 
@@ -11,8 +13,7 @@ app.use(express.json());
 
 
 
-
-const uri = "mongodb+srv://dbUser:Aud6A3sHKmtWSem3@cluster0.e04nu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.e04nu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
@@ -20,9 +21,28 @@ async function run() {
     try {
         await client.connect();
         const userCollection = client.db("warehouse").collection("items");
-        const user = { name: "sayed", email: "saiyadul77@gmail.com" };
-        const result = await userCollection.insertOne(user);
-        console.log(`The userlist is : ${result.insertedId}`)
+        
+
+        app.get('/user', async(req,res)=>{
+            const query={};
+            const cursor= userCollection.find(query);
+            const users= await cursor.toArray();
+            res.send(users);
+        })
+
+        app.get('/service/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const service = await serviceCollection.findOne(query);
+      res.send(service);
+    })
+        // POST USER
+        app.post('/user', async(req,res)=>{
+            const newUser= req.body;
+            console.log('adding new user',newUser);
+            const result= await userCollection.insertOne(newUser);
+            res.send(result)
+        })
 
     }
     finally {
