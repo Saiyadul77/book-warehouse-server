@@ -66,11 +66,7 @@ async function run() {
 
         // Data decrease and update
 
-        // app.put('/service/:id', (req, res) => {
-        //     const id = req.params.id;
-        //     const result = serviceCollection.findOneAndUpdate(id);
-        //     res.send(result);
-        // })
+        
 
     }
     finally {
